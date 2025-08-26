@@ -26,4 +26,32 @@ const postCategory = async (
   }
 };
 
-export {postCategory};
+const getCategories = async (
+  req: Request,
+  res: Response<Category[]>,
+  next: NextFunction,
+) => {
+  try {
+    res.send(await categoryModel.find());
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
+const getCategory = async (
+  req: Request<{id: string}>,
+  res: Response<Category>,
+  next: NextFunction,
+) => {
+  try {
+    const category = await categoryModel.findById(req.params.id);
+    if (!category) {
+      return next(new CustomError('Category not found', 404));
+    }
+    res.send(category);
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
+export {postCategory, getCategories, getCategory};
