@@ -54,4 +54,49 @@ const getCategory = async (
   }
 };
 
-export {postCategory, getCategories, getCategory};
+const putCategory = async (
+  req: Request<{id: string}, {}, Category>,
+  res: Response<DBMessageResponse>,
+  next: NextFunction,
+) => {
+  try {
+    const updatedCategory = await categoryModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {new: true},
+    );
+
+    if (!updatedCategory) {
+      return next(new CustomError('Category not found', 404));
+    }
+    res.json({
+      message: 'Category updated',
+      data: updatedCategory,
+    });
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
+const deleteCategory = async (
+  req: Request<{id: string}>,
+  res: Response<DBMessageResponse>,
+  next: NextFunction,
+) => {
+  try {
+    const deletedCategory = await categoryModel.findByIdAndDelete(
+      req.params.id,
+    );
+    if (!deletedCategory) {
+      return next(new CustomError('Category not found', 404));
+    }
+    res.json({
+      message: 'Category deleted',
+      data: deletedCategory,
+    });
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
+export {postCategory, getCategories, getCategory, putCategory, deleteCategory};
