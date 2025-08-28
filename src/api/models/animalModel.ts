@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {Animal} from '../../types/Animal';
+import {Animal, AnimalModel} from '../../types/Animal';
 
 const animalSchema = new mongoose.Schema<Animal>({
   name: {
@@ -35,4 +35,8 @@ const animalSchema = new mongoose.Schema<Animal>({
   },
 });
 
-export default mongoose.model<Animal>('Animal', animalSchema);
+animalSchema.statics.findBySpecies = function (species: string) {
+  return this.find({species: species});
+};
+
+export default mongoose.model<Animal, AnimalModel>('Animal', animalSchema);
