@@ -12,8 +12,8 @@ const router = express.Router();
 
 router.route('/').post(postAnimal).get(getAnimals);
 
-router.route('/:id').get(getAnimal).put(putAnimal).delete(deleteAnimal);
+router.route('/location').get(getAnimalsByBox);
 
-router.route('/:id/location').get(getAnimalsByBox);
+router.route('/:id').get(getAnimal).put(putAnimal).delete(deleteAnimal);
 
 export default router;
