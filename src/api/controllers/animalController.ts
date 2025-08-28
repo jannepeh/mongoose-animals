@@ -119,12 +119,12 @@ const getAnimalsByBox = async (
 };
 
 const getBySpeciesName = async (
-  req: Request<{species: string}>,
+  req: Request<{species_name: string}>,
   res: Response<Animal[]>,
   next: NextFunction,
 ) => {
   try {
-    res.json(await animalModel.findBySpecies(req.params.species));
+    res.json(await animalModel.findBySpecies(req.params.species_name));
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }

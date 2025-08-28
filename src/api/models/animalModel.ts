@@ -35,8 +35,21 @@ const animalSchema = new mongoose.Schema<Animal>({
   },
 });
 
-animalSchema.statics.findBySpecies = function (species: string) {
-  return this.find({species: species});
+animalSchema.statics.findBySpecies = function (species_name: string) {
+  return this.aggregate([
+    {
+      $lookup: {
+        from: 'species',
+        localField: 'species',
+        foreignField: '_id',
+        as: 'species_info',
+      },
+    },
+    {$unwind: '$species_info'},
+    {
+      $match: {'species_info.species_name': species_name},
+    },
+  ]);
 };
 
 export default mongoose.model<Animal, AnimalModel>('Animal', animalSchema);
