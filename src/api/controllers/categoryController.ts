@@ -32,7 +32,7 @@ const getCategories = async (
   next: NextFunction,
 ) => {
   try {
-    res.send(await categoryModel.find());
+    res.json(await categoryModel.find());
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }
@@ -45,10 +45,12 @@ const getCategory = async (
 ) => {
   try {
     const category = await categoryModel.findById(req.params.id);
+
     if (!category) {
-      return next(new CustomError('Category not found', 404));
+      next(new CustomError('Category not found', 404));
+      return;
     }
-    res.send(category);
+    res.json(category);
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }
@@ -67,8 +69,10 @@ const putCategory = async (
     );
 
     if (!updatedCategory) {
-      return next(new CustomError('Category not found', 404));
+      next(new CustomError('Category not found', 404));
+      return;
     }
+
     res.json({
       message: 'Category updated',
       data: updatedCategory,
@@ -87,8 +91,10 @@ const deleteCategory = async (
     const deletedCategory = await categoryModel.findByIdAndDelete(
       req.params.id,
     );
+
     if (!deletedCategory) {
-      return next(new CustomError('Category not found', 404));
+      next(new CustomError('Category not found', 404));
+      return;
     }
     res.json({
       message: 'Category deleted',
