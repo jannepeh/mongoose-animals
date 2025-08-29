@@ -5,33 +5,29 @@ const animalSchema = new mongoose.Schema<Animal>({
   name: {
     type: String,
     required: true,
-    minlength: 2,
-    maxlength: 100,
-    trim: true,
+    minLength: 2,
   },
-
+  birthdate: {
+    type: Date,
+    required: true,
+    max: Date.now(),
+  },
   species: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Species',
     required: true,
   },
-
   location: {
     type: {
       type: String,
-      required: true,
       enum: ['Point'],
+      required: true,
     },
     coordinates: {
       type: [Number],
       required: true,
       index: '2dsphere',
     },
-  },
-
-  birthdate: {
-    type: Date,
-    required: true,
   },
 });
 
@@ -42,17 +38,33 @@ animalSchema.statics.findBySpecies = function (species_name: string) {
         from: 'species',
         localField: 'species',
         foreignField: '_id',
-        as: 'species_info',
+        as: 'species',
       },
     },
-    {$unwind: '$species_info'},
     {
-      $match: {'species_info.species_name': species_name},
+      $unwind: '$species',
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'species.category',
+        foreignField: '_id',
+        as: 'species.category',
+      },
+    },
+    {
+      $unwind: '$species.category',
+    },
+    {
+      $match: {
+        'species.species_name': species_name,
+      },
     },
     {
       $project: {
         __v: 0,
-        'species_info.__v': 0,
+        'species.__v': 0,
+        'species.category.__v': 0,
       },
     },
   ]);
